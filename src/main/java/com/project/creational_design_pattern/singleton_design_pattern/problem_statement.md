@@ -1,35 +1,49 @@
-Problem Statement: Build a Database Connection Manager
+# 🔒 Singleton Design Pattern: Database Connection Manager
 
-You are developing an application that interacts with a database.
-Creating a database connection manager is expensive, and the application should reuse the same connection manager throughout its lifecycle.
+## 📝 Problem Statement
+You are developing an application that interacts with a database. Creating a database connection manager is **resource-intensive** and expensive. To optimize performance, the application must reuse the same connection manager instance throughout its entire lifecycle.
 
-Requirement
+## 🚀 Requirements
+1.  **Single Instance**: Ensure that only one instance of the `DatabaseConnectionManager` class exists.
+2.  **Global Access**: All services in the application must access the same shared instance.
+3.  **Thread Safety**: (Optional but recommended) The instance creation should be safe in a multi-threaded environment.
 
-The system should ensure that only one instance of the DatabaseConnectionManager class exists in the application.
+---
 
-All services in the application should access the same instance.
+## ⚠️ The Challenge
+If developers instantiate the class using the standard `new` keyword, multiple objects are created, leading to several issues.
 
-Problem
-
-If developers create objects normally using:
-
+### ❌ Example of the Problematic Approach:
+```java
 DatabaseConnectionManager db1 = new DatabaseConnectionManager();
 DatabaseConnectionManager db2 = new DatabaseConnectionManager();
 
-Then multiple objects will be created.
+System.out.println(db1 == db2); // Output: false (Two different objects)
+```
 
-Example:
+**This leads to:**
+*   **Resource Wastage**: Opening multiple unnecessary connections to the database.
+*   **Inconsistent State**: Different parts of the app might have different configurations.
+*   **Memory Overhead**: Unnecessary heap allocation for duplicate managers.
 
-System.out.println(db1 == db2); // false
+---
 
-This can cause problems such as:
+## ✅ The Solution: Singleton Design Pattern
+The **Singleton Pattern** ensures a class has only one instance and provides a global point of access to it.
 
-Multiple database connection managers
+### 🛠️ Implementation Goal
+1.  **Private Constructor**: Prevent instantiation from outside the class.
+2.  **Private Static Instance**: Hold the single instance of the class.
+3.  **Public Static Method**: Provide a `getInstance()` method that returns the instance (creating it if it doesn't exist).
 
-Resource wastage
+### 💻 Usage Example
+```java
+// Accessing the singleton instance
+DatabaseConnectionManager db1 = DatabaseConnectionManager.getInstance();
+DatabaseConnectionManager db2 = DatabaseConnectionManager.getInstance();
 
-Inconsistent state across the application
+System.out.println(db1 == db2); // Output: true
+db1.connect(); // Output: Connected to Database.
+```
 
-Solution
-
-To ensure that only one object is created and shared globally, we implement the Singleton Design Pattern.
+> **Note:** For production environments, consider using **Double-Checked Locking** or an **Enum Singleton** to ensure the pattern is thread-safe and protected against reflection attacks.
